@@ -14,7 +14,6 @@ const ReactionButtons = ({ post }) => {
   const dispatch = useDispatch()
 
   const onReactionClicked = (reaction) => {
-    console.log(reaction)
     dispatch(
       reactionAdded({
         postId: post.id,
@@ -22,15 +21,20 @@ const ReactionButtons = ({ post }) => {
       })
     )
   }
-  return Object.entries(reactionEmoji).map(([name, emoji]) => (
-    <button
-      type="button"
-      className="muted-button reaction-button"
-      onClick={() => onReactionClicked(name)}
-    >
-      {`${emoji} ${post.reactions[name] || 0}`}
-    </button>
-  ))
+  return (
+    <div style={{ marginLeft: '-6px' }}>
+      {Object.entries(reactionEmoji).map(([name, emoji]) => (
+        <button
+          type="button"
+          className="muted-button reaction-button"
+          onClick={() => onReactionClicked(name)}
+          key={name}
+        >
+          {`${emoji} ${post.reactions[name] || 0}`}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 export default ReactionButtons

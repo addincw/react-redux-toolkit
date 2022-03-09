@@ -113,9 +113,13 @@ section h1 {
 }
 
 .post-excerpt {
-  padding: 0.25rem 0.25rem;
+  padding: 0.75rem 0.75rem 0.25rem;
   border: 1px solid rgb(177, 174, 174);
   border-radius: 7px;
+}
+
+.posts-list {
+  margin-bottom: 0.75rem;
 }
 
 .posts-list .post-excerpt + .post-excerpt {
