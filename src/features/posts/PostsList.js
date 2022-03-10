@@ -10,7 +10,12 @@ import PostAuthor from './PostAuthor'
 import ReactionButtons from './ReactionButtons'
 import TimeAgo from './TimeAgo'
 
-export const PostExcerpt = ({ post }) => (
+/**
+ * because state save a whole of posts data object, when update reaction button on specific PostExcerpt component
+ * it cause all of PostList and his child component re-render. one of solution is wrap PostExcerpt component
+ * with memo function, so the component only re-render if the related state data has changed.
+ *  */
+export const PostExcerpt = React.memo(({ post }) => (
   <article className="post-excerpt" key={post.id}>
     <h3>{post.title}</h3>
     <div>
@@ -26,7 +31,7 @@ export const PostExcerpt = ({ post }) => (
       </Link>
     </div>
   </article>
-)
+))
 
 const PostsList = () => {
   const dispatch = useDispatch()

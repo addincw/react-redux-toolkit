@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import { selectAllPosts } from '../posts/postsSlice'
+import { selectPostByUser } from '../posts/postsSlice'
 import { selectUserById } from './usersSlice'
 
 import { PostExcerpt } from '../posts/PostsList'
@@ -10,10 +10,7 @@ const SingleUserPage = ({ match }) => {
   const { userId } = match.params
 
   const user = useSelector((state) => selectUserById(state, userId))
-  const userPosts = useSelector((state) => {
-    const posts = selectAllPosts(state)
-    return posts.filter((post) => post.user === userId)
-  })
+  const userPosts = useSelector((state) => selectPostByUser(state, userId))
 
   return (
     <section className="posts-list">
