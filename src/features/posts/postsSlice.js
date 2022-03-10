@@ -7,6 +7,17 @@ import {
 
 import { client } from '../../api/client'
 
+const sortDataIds = (unsortedData) => {
+  const sortedDataIds = []
+  const sortedData = Object.values(unsortedData)
+    .slice()
+    .sort((a, b) => b.date.localeCompare(a.date))
+
+  sortedData.forEach((data) => sortedDataIds.push(data.id))
+
+  return sortedDataIds
+}
+
 const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   const response = await client.get('/fakeApi/posts')
   return response.data
@@ -20,7 +31,8 @@ const addNewPost = createAsyncThunk('posts/addNewPost', async (post) => {
 const postsSlice = createSlice({
   name: 'posts',
   initialState: {
-    data: [],
+    dataIds: [],
+    data: {},
     status: 'idle',
     error: null,
   },
@@ -41,7 +53,7 @@ const postsSlice = createSlice({
     },
     postUpdated(state, action) {
       const submittedPost = action.payload
-      const currentPost = state.find((post) => post.id === submittedPost.id)
+      const currentPost = state.data[submittedPost.id]
 
       if (currentPost) {
         currentPost.title = submittedPost.title
@@ -50,7 +62,7 @@ const postsSlice = createSlice({
     },
     reactionAdded(state, action) {
       const { postId, reaction } = action.payload
-      const currentPost = state.data.find((post) => post.id === postId)
+      const currentPost = state.data[postId]
 
       if (currentPost && currentPost.reactions[reaction]) {
         currentPost.reactions[reaction] += 1
@@ -67,7 +79,17 @@ const postsSlice = createSlice({
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.data = state.data.concat(action.payload)
+
+        const unNormalizeData = [...action.payload]
+        unNormalizeData.forEach((data) => {
+          if (!state.dataIds.includes(data.id)) {
+            state.dataIds.push(data.id)
+          }
+          // normalize data, remove duplicate
+          state.data[data.id] = data
+        })
+
+        state.dataIds = sortDataIds(state.data)
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = 'failed'
@@ -75,15 +97,25 @@ const postsSlice = createSlice({
       })
       .addCase(addNewPost.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        state.data.push(action.payload)
+
+        const newPost = action.payload
+
+        if (!state.dataIds.includes(newPost.id)) {
+          state.dataIds.push(newPost.id)
+        }
+        state.data[newPost.id] = newPost
+
+        state.dataIds = sortDataIds(state.data)
       })
   },
 })
 
 export const selectAllPosts = (state) => state.posts.data
 
+export const selectAllPostIds = (state) => state.posts.dataIds
+
 export const selectPostById = (state, postId) => {
-  return state.posts.data.find((post) => post.id === postId)
+  return state.posts.data[postId]
 }
 
 export const selectPostByUser = createSelector(

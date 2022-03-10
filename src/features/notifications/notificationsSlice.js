@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux'
 import { client } from '../../api/client'
 
@@ -50,6 +50,11 @@ const notificationsSlice = createSlice({
 })
 
 export const selectAllNotifications = (state) => state.notifications.data
+
+export const selectUnreadNotifications = createSelector(
+  [selectAllNotifications],
+  (notifications) => notifications.filter((notification) => !notification.read)
+)
 
 export { fetchNotifications }
 
