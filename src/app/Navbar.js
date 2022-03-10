@@ -1,14 +1,15 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { fetchNotifications } from '../features/notifications/notificationsSlice'
+import {
+  fetchNotifications,
+  selectAllUnreadNotifications,
+} from '../features/notifications/notificationsSlice'
 
 export const Navbar = () => {
   const dispatch = useDispatch()
 
-  const unreadNotifications = useSelector((state) => {
-    return state.notifications.data.filter((notification) => !notification.read)
-  }).length
+  const unreadNotifications = useSelector(selectAllUnreadNotifications).length
   const fetchNewNotificationsStatus = useSelector(
     (state) => state.notifications.status
   )
